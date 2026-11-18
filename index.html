@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#153f35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="药安智鉴">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23153f35'/%3E%3Ctext x='32' y='43' font-size='34' text-anchor='middle' fill='%23fff8e8'%3E%E9%89%B4%3C/text%3E%3C/svg%3E">
+<meta name="description" content="药安智鉴：面向手机使用的中药毒性风险智能评估助手">
+<title>药安智鉴 · 中药毒性风险筛查</title>
+<style>
+:root{
+  --ink:#17352d;--muted:#66756e;--bg:#f4f0e7;--paper:#fffdf8;--line:#ddd8cb;
+  --green:#1f6f5f;--green-deep:#153f35;--green-soft:#e3f0eb;--gold:#b98b4d;
+  --red:#b43d35;--red-soft:#fae8e4;--amber:#a56b1e;--amber-soft:#fbefd8;
+  --blue:#2d6485;--blue-soft:#e3eef5;--shadow:0 12px 32px rgba(33,48,41,.09);
+  --radius:18px;--nav-h:74px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:
+  radial-gradient(circle at 12% 0%,rgba(185,139,77,.13),transparent 28%),
+  radial-gradient(circle at 92% 8%,rgba(31,111,95,.12),transparent 30%),var(--bg);
+  color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent;cursor:pointer}
+.app{max-width:860px;margin:0 auto;min-height:100vh;position:relative}
+.header{position:sticky;top:0;z-index:30;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:rgba(244,240,231,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(221,216,203,.75)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,var(--green-deep),var(--green));
+  color:#fff8e8;display:grid;place-items:center;font-family:"Songti SC","STSong","SimSun",serif;font-size:25px;font-weight:700;
+  box-shadow:0 7px 18px rgba(21,63,53,.23);flex:none}
+.brand-copy{flex:1;min-width:0}
+.brand h1{font-size:20px;line-height:1.15;margin:0;letter-spacing:.08em}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:11px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.local-badge{font-size:10px;color:var(--green-deep);background:var(--green-soft);border:1px solid #c7ded6;
+  padding:6px 9px;border-radius:999px;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.local-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:#269674;box-shadow:0 0 0 3px rgba(38,150,116,.13)}
+.main{padding:16px 14px calc(var(--nav-h) + env(safe-area-inset-bottom) + 26px)}
+.page{display:none;animation:fade .22s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hero{position:relative;overflow:hidden;border-radius:24px;padding:22px 20px;background:linear-gradient(135deg,#173f35,#286f60 70%,#367e6d);
+  color:#fff;box-shadow:var(--shadow);margin-bottom:15px}
+.hero:after{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border:1px solid rgba(255,255,255,.2);border-radius:50%}
+.hero:before{content:"";position:absolute;right:20px;bottom:-54px;width:110px;height:110px;border:1px solid rgba(255,255,255,.12);border-radius:50%}
+.hero-kicker{font-size:11px;opacity:.75;letter-spacing:.12em;margin-bottom:8px}
+.hero h2{font-size:25px;line-height:1.3;margin:0 0 9px;position:relative;z-index:1}
+.hero p{font-size:13px;line-height:1.7;margin:0;color:rgba(255,255,255,.8);position:relative;z-index:1}
+.install-hint{display:flex;align-items:center;gap:10px;background:#fff9eb;border:1px solid #e8d8b8;border-radius:14px;padding:11px 12px;margin:0 0 14px;font-size:11px;line-height:1.55;color:#6b5836}
+.install-hint strong{display:block;font-size:12px;color:#5b492b;margin-bottom:2px}
+.install-hint button{margin-left:auto;border:1px solid #d8c59e;background:#fff;color:#745d35;border-radius:9px;min-height:32px;padding:5px 9px;font-size:10px;flex:none}
+.install-hint.hide{display:none}
+.hero-row{display:flex;gap:8px;margin-top:16px;position:relative;z-index:1;flex-wrap:wrap}
+.hero-tag{font-size:11px;padding:6px 9px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.08)}
+.card{background:var(--paper);border:1px solid rgba(221,216,203,.9);border-radius:var(--radius);padding:18px;box-shadow:0 6px 22px rgba(33,48,41,.055);margin-bottom:14px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card-title{font-size:16px;font-weight:750;margin:0;letter-spacing:.02em}
+.card-sub{font-size:11px;color:var(--muted);margin:4px 0 0;line-height:1.55}
+.section-no{font-size:10px;color:var(--green);border:1px solid #c9ddd7;background:var(--green-soft);
+  border-radius:999px;padding:4px 7px;white-space:nowrap;font-weight:700}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.label{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;font-weight:700;margin-bottom:7px}
+.label small{font-size:10px;color:var(--muted);font-weight:400}
+.input,.select,.textarea{width:100%;border:1px solid #d8d2c4;background:#fff;border-radius:12px;color:var(--ink);
+  min-height:48px;padding:11px 12px;outline:none;font-size:16px;transition:.18s border,.18s box-shadow,.18s background}
+.textarea{resize:vertical;min-height:80px}
+.input:focus,.select:focus,.textarea:focus{border-color:#78a99b;box-shadow:0 0 0 3px rgba(31,111,95,.1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick-chips{display:flex;gap:7px;overflow:auto;padding:2px 0 4px;scrollbar-width:none;margin-top:8px}
+.quick-chips::-webkit-scrollbar{display:none}
+.chip-button{white-space:nowrap;border:1px solid #d8d2c4;background:#fff;color:#42544d;border-radius:999px;padding:7px 11px;font-size:11px}
+.chip-button.active{background:var(--green-deep);border-color:var(--green-deep);color:#fff}
+.choice-grid{display:flex;flex-wrap:wrap;gap:8px}
+.choice{position:relative}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice span{display:flex;align-items:center;gap:6px;min-height:38px;padding:8px 10px;border:1px solid #d9d3c6;border-radius:11px;
+  background:#fff;font-size:12px;color:#465850;transition:.18s}
+.choice span:before{content:"";width:8px;height:8px;border:1.5px solid #aaa;border-radius:50%;flex:none}
+.choice input:checked+span{background:var(--green-soft);border-color:#90bdb0;color:var(--green-deep);font-weight:650}
+.choice input:checked+span:before{background:var(--green);border-color:var(--green);box-shadow:inset 0 0 0 2px #fff}
+.choice.warn input:checked+span{background:var(--red-soft);border-color:#e2aaa4;color:#88352f}
+.choice.warn input:checked+span:before{background:var(--red);border-color:var(--red)}
+.form-hint{font-size:10px;line-height:1.55;color:var(--muted);margin-top:6px}
+.button{border:0;border-radius:13px;min-height:46px;padding:12px 15px;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-weight:750;font-size:14px;transition:.18s transform,.18s opacity}
+.button:active{transform:scale(.985)}
+.button.primary{background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;box-shadow:0 7px 16px rgba(21,63,53,.18)}
+.button.secondary{background:#fff;color:var(--green-deep);border:1px solid #cfd9d4}
+.button.ghost{background:transparent;color:var(--muted);border:1px dashed #cfc8b9}
+.button.danger{background:var(--red-soft);color:var(--red);border:1px solid #e9c0bb}
+.button.full{width:100%}
+.button-row{display:flex;gap:8px;flex-wrap:wrap}
+.button-row .button{flex:1;min-width:120px}
+.action-bar{margin-top:16px;padding-top:15px;border-top:1px solid #e5dfd2}
+.error{color:var(--red);font-size:11px;margin-top:6px;display:none}
+.error.show{display:block}
+.muted{color:var(--muted)}
+.small{font-size:11px}
+.result-card{display:none;overflow:hidden}
+.result-card.show{display:block;animation:fade .25s ease}
+.result-top{display:grid;grid-template-columns:132px 1fr;gap:18px;align-items:center}
+.gauge{--score:0;--tone:#2f8b70;width:132px;height:132px;border-radius:50%;position:relative;
+  background:conic-gradient(var(--tone) calc(var(--score)*1%),#ece8df 0);display:grid;place-items:center;flex:none}
+.gauge:after{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 1px #ebe5d9}
+.gauge-inner{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center}
+.gauge-score{font-size:34px;font-weight:850;line-height:1;color:var(--tone);letter-spacing:-.04em}
+.gauge-unit{font-size:10px;color:var(--muted);margin-top:5px}
+.level-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;margin-bottom:8px}
+.level-pill:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.level-low{background:var(--green-soft);color:var(--green)}
+.level-mid{background:var(--amber-soft);color:var(--amber)}
+.level-high{background:var(--red-soft);color:var(--red)}
+.result-title{font-size:20px;font-weight:800;line-height:1.32;margin:0 0 6px}
+.result-desc{font-size:12px;line-height:1.65;color:var(--muted);margin:0}
+.emergency{display:none;background:var(--red-soft);border:1px solid #ebbbb5;color:#7d2f29;border-radius:13px;padding:12px 13px;
+  margin-top:15px;font-size:12px;line-height:1.65;font-weight:650}
+.emergency.show{display:block}
+.result-section{margin-top:18px}
+.result-section h4{font-size:12px;margin:0 0 9px;color:#34473f;letter-spacing:.04em}
+.factor-list,.advice-list{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.factor-item,.advice-item{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.58;padding:9px 10px;border-radius:11px;background:#f8f5ee;color:#425149}
+.factor-item:before{content:"!";width:18px;height:18px;flex:none;border-radius:50%;display:grid;place-items:center;background:#ead8b8;color:#855614;font-size:11px;font-weight:800}
+.advice-item:before{content:"✓";width:18px;height:18px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--green-soft);color:var(--green);font-size:10px;font-weight:800}
+.herb-note{margin-top:14px;padding:12px;border-left:3px solid var(--gold);background:#fcf7eb;border-radius:0 10px 10px 0;font-size:11px;line-height:1.7;color:#66573d}
+.disclaimer{font-size:10px;line-height:1.65;color:#7d7a72;background:#f1eee7;border-radius:12px;padding:11px 12px;margin-top:14px}
+.toolbar{display:flex;gap:8px;margin-bottom:13px}
+.search-wrap{position:relative;flex:1}
+.search-wrap:before{content:"⌕";position:absolute;left:13px;top:50%;transform:translateY(-53%);font-size:20px;color:#7c877f}
+.search-input{width:100%;height:46px;border-radius:13px;border:1px solid #d8d2c4;background:#fffdf9;padding:0 12px 0 38px;font-size:15px;outline:none}
+.filter-row{display:flex;gap:7px;overflow:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{white-space:nowrap;border:1px solid #d7d2c6;background:#fff;color:#58655f;border-radius:999px;padding:7px 10px;font-size:11px}
+.filter-chip.active{background:var(--green-deep);border-color:var(--green-deep);color:#fff}
+.herb-card{padding:15px;margin-bottom:10px}
+.herb-card summary{list-style:none;cursor:pointer}
+.herb-card summary::-webkit-details-marker{display:none}
+.herb-summary{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.herb-name{font-size:15px;font-weight:800;margin:0}
+.herb-aliases{font-size:10px;color:var(--muted);margin:4px 0 0}
+.grade{font-size:10px;padding:5px 8px;border-radius:999px;white-space:nowrap;font-weight:750}
+.grade-5,.grade-4{background:var(--red-soft);color:var(--red)}
+.grade-3{background:var(--amber-soft);color:var(--amber)}
+.grade-2,.grade-1{background:var(--green-soft);color:var(--green)}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:9px;background:#f2efe7;color:#6b6b63;padding:4px 7px;border-radius:999px}
+.herb-detail{padding-top:12px;margin-top:12px;border-top:1px solid #ebe5d8;font-size:11px;line-height:1.7;color:#526058}
+.herb-detail strong{color:var(--ink)}
+.empty{padding:30px 18px;text-align:center;color:var(--muted)}
+.empty-icon{font-size:28px;margin-bottom:8px;opacity:.6}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px}
+.stat{background:var(--paper);border:1px solid #e0dbcf;border-radius:14px;padding:12px 9px;text-align:center}
+.stat b{display:block;font-size:20px;line-height:1.1;color:var(--green-deep)}
+.stat span{font-size:9px;color:var(--muted);display:block;margin-top:5px}
+.record-card{padding:14px;margin-bottom:9px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.record-score{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:850;flex:none}
+.record-main{flex:1;min-width:0}
+.record-main h3{font-size:13px;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.record-main p{font-size:10px;color:var(--muted);margin:0}
+.record-arrow{font-size:20px;color:#a4aaa5}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:860px;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  background:rgba(255,253,248,.95);backdrop-filter:blur(18px);border-top:1px solid #ded8ca;display:grid;grid-template-columns:repeat(3,1fr);
+  padding:7px 12px env(safe-area-inset-bottom);z-index:40}
+.nav button{background:none;border:0;color:#89928d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:13px;font-size:10px}
+.nav button.active{color:var(--green-deep);background:var(--green-soft)}
+.nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(17,32,27,.54);display:none;align-items:flex-end;justify-content:center;padding:0}
+.modal.show{display:flex;animation:fade .18s ease}
+.modal-panel{width:100%;max-width:760px;max-height:92vh;overflow:auto;background:var(--paper);border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -20px 50px rgba(0,0,0,.18)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.modal-head h2{font-size:18px;margin:0}
+.icon-button{width:38px;height:38px;border-radius:50%;border:1px solid #ddd7ca;background:#fff;color:#57635d;font-size:20px}
+.report-sheet{border:1px solid #e2dccf;border-radius:16px;padding:16px;background:#fff}
+.report-brand{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e7e1d5;padding-bottom:12px;margin-bottom:13px}
+.report-brand b{font-size:16px}
+.report-brand span{font-size:9px;color:var(--muted);text-align:right;line-height:1.5}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;margin-bottom:14px;font-size:11px}
+.report-grid label{display:block;color:var(--muted);font-size:9px;margin-bottom:2px}
+.report-grid strong{font-size:12px;font-weight:700}
+.report-section{padding-top:12px;margin-top:12px;border-top:1px solid #ece6da}
+.report-section h3{font-size:11px;margin:0 0 7px}
+.report-section p,.report-section li{font-size:11px;line-height:1.7;color:#4e5c55}
+.report-section ul{padding-left:18px;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 18px);transform:translate(-50%,20px);opacity:0;
+  background:#173f35;color:#fff;border-radius:999px;padding:10px 16px;font-size:12px;z-index:100;pointer-events:none;transition:.22s;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.footer-note{text-align:center;font-size:9px;color:#989c96;line-height:1.6;padding:6px 12px 2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (min-width:720px){
+  .main{padding:22px 22px 110px}.hero{padding:28px}.result-top{grid-template-columns:150px 1fr}.gauge{width:150px;height:150px}
+}
+@media (max-width:380px){
+  .brand p{max-width:180px}.result-top{grid-template-columns:108px 1fr;gap:13px}.gauge{width:108px;height:108px}.gauge-score{font-size:29px}
+  .grid3{grid-template-columns:1fr 1fr}.local-badge{display:none}
+}
+@media print{
+  body{background:#fff}.header,.nav,.hero,.assessment-card,.no-print,.footer-note{display:none!important}
+  .main{padding:0}.modal{position:static;display:block;background:#fff;padding:0}.modal-panel{max-height:none;box-shadow:none;border-radius:0;padding:0}
+  .report-sheet{border:0;padding:0}.modal-head{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">鉴</div>
+      <div class="brand-copy">
+        <h1>药安智鉴</h1>
+        <p>中药毒性风险智能评估助手 · 手机可用</p>
+      </div>
+      <div class="local-badge">本地运行</div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="page active" id="page-assess">
+      <div class="hero">
+        <div class="hero-kicker">TCM SAFETY SCREENING</div>
+        <h2>先识别风险，<br>再决定是否继续使用</h2>
+        <p>结合药材警戒等级、剂量、使用时长、个体状态、合并用药和警示症状，生成可保存的风险筛查报告。</p>
+        <div class="hero-row">
+          <span class="hero-tag">无需注册</span>
+          <span class="hero-tag">数据不上传</span>
+          <span class="hero-tag">可离线使用</span>
+        </div>
+      </div>
+      <div class="install-hint" id="installHint"><div><strong>长期使用：安装到主屏幕</strong>iPhone Safari 点击“分享” → “添加到主屏幕”，首次打开后即可离线使用。</div><button type="button" id="hideInstallHint">知道了</button></div>
+
+      <div class="card assessment-card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">开始风险筛查</h2>
+            <p class="card-sub">请按实际情况填写，信息越完整，提示越准确。</p>
+          </div>
+          <span class="section-no">约 1 分钟</span>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>选择药材</span><small>共 26 种重点药材</small></div>
+          <select class="select" id="herbSelect" aria-label="选择药材">
+            <option value="">请选择药材</option>
+          </select>
+          <div class="quick-chips" id="quickHerbs"></div>
+          <div class="error" id="herbError">请先选择一种药材</div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>每日用量</span><small id="doseHint">按干燥药材计</small></div>
+          <div class="grid2">
+            <input class="input" id="doseInput" type="number" inputmode="decimal" min="0" step="0.1" placeholder="例如 10">
+            <select class="select" id="formSelect" aria-label="使用形式">
+              <option value="汤剂">汤剂内服</option>
+              <option value="中成药">中成药</option>
+              <option value="药酒">药酒</option>
+              <option value="外用">外用</option>
+            </select>
+          </div>
+          <div class="error" id="doseError">请输入有效日剂量</div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>连续使用天数</span><small>按最近一次连续使用计算</small></div>
+          <input class="input" id="daysInput" type="number" inputmode="numeric" min="1" step="1" placeholder="例如 14">
+          <div class="error" id="daysError">请输入连续使用天数</div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>是否规范炮制并按医嘱煎煮</span><small>高风险药材尤其重要</small></div>
+          <div class="choice-grid">
+            <label class="choice"><input type="radio" name="processed" value="yes" checked><span>是，已规范处理</span></label>
+            <label class="choice warn"><input type="radio" name="processed" value="no"><span>否或不确定</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>个体风险</span><small>可多选</small></div>
+          <div class="choice-grid" id="personFactors"></div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>合并用药</span><small>可多选</small></div>
+          <div class="choice-grid" id="medFactors"></div>
+        </div>
+
+        <div class="field">
+          <div class="label"><span>当前警示症状</span><small>出现任意一项请优先就医</small></div>
+          <div class="choice-grid" id="symptomFactors"></div>
+        </div>
+
+        <div class="action-bar">
+          <div class="button-row">
+            <button class="button secondary" id="exampleButton" type="button">填入示例</button>
+            <button class="button primary" id="assessButton" type="button">开始风险筛查</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card result-card" id="resultCard" aria-live="polite">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">筛查结果</h2>
+            <p class="card-sub" id="resultMeta"></p>
+          </div>
+          <span class="section-no" id="resultDate"></span>
+        </div>
+        <div class="result-top">
+          <div class="gauge" id="gauge"><div class="gauge-inner"><span class="gauge-score" id="scoreText">0</span><span class="gauge-unit">风险指数 / 100</span></div></div>
+          <div>
+            <span class="level-pill level-low" id="levelPill">低风险</span>
+            <h3 class="result-title" id="resultTitle">风险可控</h3>
+            <p class="result-desc" id="resultDesc"></p>
+          </div>
+        </div>
+        <div class="emergency" id="emergencyBox"></div>
+        <div class="result-section">
+          <h4>关键风险因素</h4>
+          <ul class="factor-list" id="factorList"></ul>
+        </div>
+        <div class="result-section">
+          <h4>建议行动</h4>
+          <ul class="advice-list" id="adviceList"></ul>
+        </div>
+        <div class="herb-note" id="herbNote"></div>
+        <div class="disclaimer">本工具用于中药安全风险教育和辅助筛查，不能替代医生、药师或医疗机构的诊断与治疗。出现严重症状时请立即就医。</div>
+        <div class="action-bar">
+          <div class="button-row">
+            <button class="button secondary" id="reportButton" type="button">查看完整报告</button>
+            <button class="button primary" id="shareButton" type="button">分享摘要</button>
+          </div>
+        </div>
+      </div>
+      <p class="footer-note">药安智鉴 v1.0 · 规则透明 · 本地计算 · 无网络也可使用</p>
+    </section>
+
+    <section class="page" id="page-library">
+      <div class="card" style="padding-bottom:13px">
+        <div class="card-head" style="margin-bottom:12px">
+          <div>
+            <h2 class="card-title">重点药材知识库</h2>
+            <p class="card-sub">按毒性特点、规范用法和风险人群快速查找。</p>
+          </div>
+          <span class="section-no">26 种 + 其他</span>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap"><input class="search-input" id="librarySearch" placeholder="搜索药材名、别名或风险"></div>
+        </div>
+        <div class="filter-row" id="libraryFilters"></div>
+      </div>
+      <div id="libraryList"></div>
+    </section>
+
+    <section class="page" id="page-records">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">我的筛查记录</h2>
+            <p class="card-sub">仅保存在当前手机浏览器中，不会上传服务器。</p>
+          </div>
+          <span class="section-no">本地存储</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="statTotal">0</b><span>累计记录</span></div>
+          <div class="stat"><b id="statHigh">0</b><span>高风险</span></div>
+          <div class="stat"><b id="statLast">--</b><span>最近评估</span></div>
+        </div>
+        <div id="recordList"></div>
+        <div class="button-row" id="recordActions" style="display:none;margin-top:12px">
+          <button class="button danger" id="clearRecordsButton" type="button">清空记录</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">如何正确使用</h2>
+        <ul class="advice-list" style="margin-top:12px">
+          <li class="advice-item">筛查结果用于决定是否需要进一步咨询，不用于自行诊断。</li>
+          <li class="advice-item">高风险药材不要自行加量、延长疗程或改变炮制方法。</li>
+          <li class="advice-item">正在服药、备孕、怀孕、哺乳或肝肾功能异常者，用药前先咨询医生或药师。</li>
+          <li class="advice-item">保留处方、药盒和剩余药材，便于就医时说明暴露情况。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="主导航">
+    <button class="active" data-page="assess">
+      <svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.6-3 7.5-7 9-4-1.5-7-4.4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      风险评估
+    </button>
+    <button data-page="library">
+      <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 016.5 3H11v17H6.5A2.5 2.5 0 004 22V5.5z"/><path d="M20 5.5A2.5 2.5 0 0017.5 3H13v17h4.5A2.5 2.5 0 0120 22V5.5z"/></svg>
+      知识库
+    </button>
+    <button data-page="records">
+      <svg viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 012 2v16l-8-4-8 4V5a2 2 0 012-2z"/><path d="M8 8h8M8 12h5"/></svg>
+      记录
+    </button>
+  </nav>
+</div>
+
+<div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h2 id="reportModalTitle">风险筛查报告</h2>
+      <button class="icon-button no-print" id="closeModalButton" aria-label="关闭报告">×</button>
+    </div>
+    <div class="report-sheet" id="reportSheet"></div>
+    <div class="button-row no-print" style="margin-top:16px">
+      <button class="button secondary" id="copyReportButton" type="button">复制摘要</button>
+      <button class="button primary" id="printReportButton" type="button">打印 / 保存 PDF</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+const HERBS = [
+  {name:'附子',aliases:'附片、黑顺片、白附片',grade:5,max:15,base:46,processing:true,tags:['神经毒性','心血管毒性','乌头类'],risk:'含乌头类生物碱，必须使用炮制品并先煎、久煎。口唇或肢体麻木、心悸、恶心是重要警示信号。',pregnancy:'慎用或禁用',advice:'不得自行加量；若服药后出现麻木、心悸、呕吐或意识异常，立即停用并就医。'},
+  {name:'川乌',aliases:'制川乌',grade:5,max:3,base:50,processing:true,tags:['神经毒性','心血管毒性','乌头类'],risk:'乌头类高风险药材，炮制品也必须严格控制剂量并先煎久煎。',pregnancy:'禁用',advice:'仅应在医生处方和明确煎煮规范下使用。'},
+  {name:'草乌',aliases:'制草乌',grade:5,max:3,base:52,processing:true,tags:['神经毒性','心血管毒性','乌头类'],risk:'毒性强，普通家庭煎煮难以保证安全，误用风险高。',pregnancy:'禁用',advice:'不建议自行购买或泡酒；出现麻木、心律失常应立即急诊。'},
+  {name:'马钱子',aliases:'番木鳖、制马钱子',grade:5,max:0.6,base:54,processing:true,tags:['神经毒性','惊厥风险'],risk:'含士的宁，安全窗窄。过量可导致肌肉强直、惊厥和呼吸抑制。',pregnancy:'禁用',advice:'必须遵医嘱使用，禁止自行泡酒或加量。'},
+  {name:'雷公藤',aliases:'黄藤根、断肠草类混淆',grade:4,max:3,base:44,processing:true,tags:['肝毒性','肾毒性','生殖毒性'],risk:'多器官毒性明显，长期或超量使用可损伤肝肾和生殖系统。',pregnancy:'禁用',advice:'需专科医生评估和监测，不建议自行煎服。'},
+  {name:'朱砂',aliases:'辰砂、丹砂',grade:5,max:0.5,base:50,processing:false,tags:['汞暴露','神经毒性','肾毒性'],risk:'含硫化汞，不宜长期或大量服用，禁止火煅。',pregnancy:'禁用',advice:'避免与含碘、含溴或还原性药物同用；长期使用者应咨询专业医师。'},
+  {name:'雄黄',aliases:'明雄黄、腰黄',grade:5,max:0.1,base:52,processing:false,tags:['砷暴露','肝毒性','神经毒性'],risk:'含砷矿物药，安全窗窄，不宜久服或大面积外用。',pregnancy:'禁用',advice:'不可自行加热或长期服用；出现皮疹、腹痛、乏力应尽快就医。'},
+  {name:'何首乌',aliases:'生何首乌、制何首乌',grade:3,max:12,base:25,processing:true,tags:['肝毒性','个体特异质'],risk:'存在个体特异质肝损伤风险，生品风险通常高于炮制品。',pregnancy:'慎用',advice:'连续使用期间注意乏力、食欲下降、尿黄或皮肤发黄，出现时应停药并查肝功能。'},
+  {name:'土三七',aliases:'菊三七、景天三七',grade:4,max:9,base:40,processing:false,tags:['肝毒性','吡咯里西啶生物碱'],risk:'含吡咯里西啶生物碱，可导致肝窦阻塞综合征，不建议自行长期服用。',pregnancy:'禁用',advice:'不要与三七混淆；出现腹胀、腹水、黄疸应立即就医。'},
+  {name:'细辛',aliases:'北细辛、华细辛',grade:3,max:3,base:28,processing:false,tags:['神经毒性','肾毒性','来源鉴别'],risk:'需控制剂量和来源，避免与含马兜铃酸药材混淆。',pregnancy:'慎用',advice:'不宜长期大量服用；散剂用量应更严格遵循医嘱。'},
+  {name:'苍耳子',aliases:'苍耳、炒苍耳子',grade:3,max:10,base:27,processing:true,tags:['肝毒性','胃肠反应'],risk:'生品或过量使用存在肝损伤和胃肠道风险。',pregnancy:'慎用',advice:'应使用炮制品，避免长期连续服用。'},
+  {name:'苦杏仁',aliases:'杏仁、炒苦杏仁',grade:3,max:10,base:28,processing:true,tags:['氰苷','神经毒性','呼吸抑制'],risk:'含苦杏仁苷，过量可导致头晕、恶心、呼吸困难。',pregnancy:'慎用',advice:'儿童尤其敏感；不要生食或自行加量。'},
+  {name:'半夏',aliases:'法半夏、姜半夏、清半夏',grade:3,max:9,base:26,processing:true,tags:['黏膜刺激','神经毒性'],risk:'生半夏刺激性大，需使用炮制品并遵医嘱。',pregnancy:'慎用',advice:'出现口舌麻木、咽喉灼痛或呼吸困难应立即就医。'},
+  {name:'天南星',aliases:'制天南星、胆南星',grade:3,max:9,base:27,processing:true,tags:['黏膜刺激','神经毒性'],risk:'生品刺激性强，炮制不规范时风险明显增加。',pregnancy:'慎用',advice:'仅使用炮制品；不可自行加工生品。'},
+  {name:'甘遂',aliases:'醋甘遂',grade:4,max:1.5,base:43,processing:true,tags:['峻下逐水','脱水','胃肠刺激'],risk:'药性峻猛，可导致剧烈腹泻、脱水和电解质紊乱。',pregnancy:'禁用',advice:'仅用于医生严格管理的特定情况，不建议家庭自行使用。'},
+  {name:'芫花',aliases:'醋芫花',grade:4,max:3,base:41,processing:true,tags:['峻下逐水','胃肠刺激','肾损伤'],risk:'刺激性强，过量可导致呕吐、腹泻、脱水和肾损伤。',pregnancy:'禁用',advice:'需严格遵医嘱，出现剧烈腹痛或尿量减少应立即就医。'},
+  {name:'巴豆',aliases:'巴豆霜、江子',grade:5,max:0.3,base:53,processing:true,tags:['峻下逐水','腐蚀性','脱水'],risk:'毒性强，可导致严重胃肠刺激、脱水和循环障碍。',pregnancy:'禁用',advice:'禁止自行使用；必须由专业医生管理。'},
+  {name:'斑蝥',aliases:'芫青、斑猫',grade:5,max:0.06,base:56,processing:true,tags:['肾毒性','膀胱毒性','皮肤刺激'],risk:'毒性极强，可导致血尿、排尿困难和肾功能损伤。',pregnancy:'禁用',advice:'严禁自行服用或外用过量，出现血尿应立即急诊。'},
+  {name:'水蛭',aliases:'蚂蟥、烫水蛭',grade:2,max:3,base:15,processing:true,tags:['出血风险'],risk:'具有抗凝/活血作用，围手术期、凝血异常或合并抗凝药时需谨慎。',pregnancy:'禁用',advice:'计划手术、月经量多或有出血倾向时先咨询医生。'},
+  {name:'吴茱萸',aliases:'制吴茱萸',grade:2,max:5,base:14,processing:true,tags:['胃肠刺激','肝毒性个案'],risk:'过量可引起恶心、腹痛等不适，长期使用需谨慎。',pregnancy:'慎用',advice:'出现明显胃痛、呕吐或皮肤黄染应停药咨询。'},
+  {name:'山豆根',aliases:'广豆根、苦豆根',grade:4,max:6,base:38,processing:false,tags:['神经毒性','肝毒性'],risk:'过量可导致头晕、恶心、乏力及肝损伤。',pregnancy:'慎用',advice:'严格控制剂量和疗程，避免与来源不明的“豆根”混用。'},
+  {name:'白果',aliases:'银杏、炒白果仁',grade:3,max:10,base:24,processing:true,tags:['神经毒性','儿童敏感'],risk:'含银杏酸等成分，生食或过量可导致呕吐、抽搐等。',pregnancy:'慎用',advice:'儿童尤其需控制量，不可生食。'},
+  {name:'麻黄',aliases:'生麻黄、炙麻黄',grade:3,max:10,base:26,processing:false,tags:['心血管兴奋','血压升高'],risk:'可升高血压、加快心率，失眠和心悸人群需谨慎。',pregnancy:'慎用',advice:'高血压、心律失常、甲状腺功能亢进者应先咨询医生。'},
+  {name:'苦参',aliases:'苦参片',grade:2,max:9,base:16,processing:false,tags:['肝毒性个案','胃肠反应'],risk:'长期大量使用存在肝损伤个案和胃肠道不适。',pregnancy:'慎用',advice:'避免长期连续大剂量服用。'},
+  {name:'甘草',aliases:'生甘草、炙甘草',grade:2,max:10,base:13,processing:false,tags:['假性醛固酮增多','低钾'],risk:'长期大剂量可导致水钠潴留、高血压和低钾。',pregnancy:'慎用',advice:'高血压、水肿或正在使用利尿剂者应咨询药师。'},
+  {name:'大黄',aliases:'生大黄、制大黄',grade:2,max:15,base:14,processing:false,tags:['胃肠反应','电解质紊乱'],risk:'长期使用可导致腹泻、电解质紊乱和依赖性。',pregnancy:'禁用',advice:'避免长期连续使用，出现乏力、心悸或明显腹泻应停药。'},
+  {name:'其他药材',aliases:'自定义、未知来源',grade:2,max:10,base:18,processing:false,tags:['信息不足','来源风险'],risk:'当前缺少该药材的专项安全资料，系统采用保守规则评估。',pregnancy:'请先咨询医生',advice:'确认药材名称、来源、炮制方法和推荐剂量后再使用。'}
+];
+
+const PERSON_FACTORS = [
+  {id:'age65',label:'年龄≥65岁',weight:7},
+  {id:'child',label:'儿童或青少年',weight:9},
+  {id:'pregnancy',label:'怀孕或备孕',weight:14},
+  {id:'lactation',label:'哺乳期',weight:7},
+  {id:'liver',label:'肝病或肝功能异常',weight:14},
+  {id:'kidney',label:'肾病或肾功能异常',weight:14},
+  {id:'allergy',label:'药物/食物过敏史',weight:8}
+];
+const MED_FACTORS = [
+  {id:'anticoag',label:'抗凝/抗血小板药',weight:9},
+  {id:'digoxin',label:'地高辛等强心药',weight:9},
+  {id:'statin',label:'他汀类降脂药',weight:6},
+  {id:'sedative',label:'镇静催眠药',weight:6},
+  {id:'immuno',label:'免疫抑制剂',weight:5},
+  {id:'diabetes',label:'降糖药',weight:4}
+];
+const SYMPTOMS = [
+  {id:'neuro',label:'麻木、震颤、抽搐',weight:20},
+  {id:'cardiac',label:'心悸、胸闷、晕厥',weight:25},
+  {id:'gi',label:'剧烈呕吐或腹泻',weight:13},
+  {id:'liver',label:'黄疸、尿黄、明显乏力',weight:24},
+  {id:'kidney',label:'尿量明显减少或水肿',weight:23},
+  {id:'allergy',label:'皮疹、面唇肿胀、呼吸困难',weight:24}
+];
+const FILTERS = ['全部','高警戒','肝毒性','肾毒性','神经毒性','心血管毒性','出血风险','生殖风险'];
+const STORAGE_KEY = 'yaoan_assessments_v1';
+
+const $ = function(id){return document.getElementById(id)};
+const escapeHtml = function(value){
+  return String(value == null ? '' : value).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]});
+};
+const clamp = function(n,min,max){return Math.max(min,Math.min(max,n))};
+const formatDate = function(date){
+  const d = new Date(date);
+  const pad = function(n){return String(n).padStart(2,'0')};
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+};
+const shortDate = function(date){
+  const d = new Date(date);
+  return (d.getMonth()+1) + '/' + d.getDate();
+};
+const uid = function(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'r-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+};
+const getHerb = function(name){return HERBS.find(function(h){return h.name===name}) || HERBS[HERBS.length-1]};
+const levelFor = function(score){
+  if(score >= 75) return {key:'critical',label:'极高风险',tone:'#b43d35',pill:'level-high',title:'建议立即停用并寻求专业帮助',desc:'当前组合存在多项高风险因素，不建议继续自行使用。'};
+  if(score >= 50) return {key:'high',label:'高风险',tone:'#b85d37',pill:'level-high',title:'建议暂停使用并尽快咨询医生或药师',desc:'需要结合具体处方、炮制方法和身体情况进一步判断。'};
+  if(score >= 25) return {key:'mid',label:'中风险',tone:'#a56b1e',pill:'level-mid',title:'需要谨慎并加强观察',desc:'建议不要自行加量或延长疗程，必要时咨询专业人士。'};
+  return {key:'low',label:'低风险',tone:'#2f8b70',pill:'level-low',title:'暂未发现突出风险信号',desc:'仍需遵守推荐剂量和疗程，出现不适应及时停药咨询。'};
+};
+
+function buildSelect(){
+  const select = $('herbSelect');
+  const sorted = HERBS.slice(0,-1).sort(function(a,b){return b.grade-a.grade || a.name.localeCompare(b.name,'zh-CN')});
+  sorted.forEach(function(h){
+    const option = document.createElement('option');
+    option.value = h.name;
+    option.textContent = h.name + ' · 警戒 ' + h.grade + '/5';
+    select.appendChild(option);
+  });
+  const last = document.createElement('option');
+  last.value = HERBS[HERBS.length-1].name;
+  last.textContent = HERBS[HERBS.length-1].name;
+  select.appendChild(last);
+  const quickNames = ['附子','何首乌','雷公藤','朱砂','土三七','细辛'];
+  $('quickHerbs').innerHTML = quickNames.map(function(name){
+    return '<button class="chip-button" type="button" data-herb="'+escapeHtml(name)+'">'+escapeHtml(name)+'</button>';
+  }).join('');
+  $('quickHerbs').addEventListener('click',function(e){
+    const btn = e.target.closest('[data-herb]');
+    if(!btn) return;
+    select.value = btn.dataset.herb;
+    select.dispatchEvent(new Event('change'));
+    document.querySelectorAll('.chip-button').forEach(function(el){el.classList.toggle('active',el===btn)});
+  });
+  select.addEventListener('change',updateHerbHint);
+}
+
+function buildChoices(){
+  function make(items, containerId, warn){
+    $(containerId).innerHTML = items.map(function(item){
+      return '<label class="choice'+(warn?' warn':'')+'"><input type="checkbox" name="'+containerId+'" value="'+item.id+'" data-weight="'+item.weight+'"><span>'+escapeHtml(item.label)+'</span></label>';
+    }).join('');
+  }
+  make(PERSON_FACTORS,'personFactors',false);
+  make(MED_FACTORS,'medFactors',false);
+  make(SYMPTOMS,'symptomFactors',true);
+}
+
+function updateHerbHint(){
+  const herb = getHerb($('herbSelect').value);
+  const hint = $('doseHint');
+  if(!$('herbSelect').value){hint.textContent='按干燥药材计';return}
+  hint.textContent = '参考上限 ' + herb.max + ' g/日';
+}
+
+function selectedIds(containerId){
+  return Array.from(document.querySelectorAll('#'+containerId+' input:checked')).map(function(el){return el.value});
+}
+
+function selectedItems(items, ids){
+  return items.filter(function(item){return ids.indexOf(item.id)>=0});
+}
+
+function addFactor(factors,text){if(text && factors.indexOf(text)<0)factors.push(text)}
+
+function calculate(){
+  const herbName = $('herbSelect').value;
+  if(!herbName){$('herbError').classList.add('show');return null}
+  const herb = getHerb(herbName);
+  const dose = Number($('doseInput').value);
+  const days = Number($('daysInput').value);
+  if(!dose || dose<=0){$('doseError').classList.add('show');return null}
+  if(!days || days<=0){$('daysError').classList.add('show');return null}
+  $('herbError').classList.remove('show');
+  $('doseError').classList.remove('show');
+  $('daysError').classList.remove('show');
+
+  const form = $('formSelect').value;
+  const processed = document.querySelector('input[name="processed"]:checked').value === 'yes';
+  const person = selectedItems(PERSON_FACTORS,selectedIds('personFactors'));
+  const meds = selectedItems(MED_FACTORS,selectedIds('medFactors'));
+  const symptoms = selectedItems(SYMPTOMS,selectedIds('symptomFactors'));
+  let score = herb.base;
+  const factors = [];
+  const advice = [];
+  addFactor(factors,'药材基础警戒等级 ' + herb.grade + '/5');
+
+  if(form === '外用'){
+    score -= 12;
+    addFactor(factors,'外用途径通常低于内服暴露，但仍需关注皮肤刺激');
+  }
+  if(form === '药酒'){
+    score += 8;
+    addFactor(factors,'药酒会改变剂量和吸收速度，且酒精可增加肝胃负担');
+  }
+  const ratio = dose / herb.max;
+  if(ratio > 1.5){score += 25;addFactor(factors,'日剂量超过参考上限 50% 以上')}
+  else if(ratio > 1.15){score += 16;addFactor(factors,'日剂量明显超过参考上限')}
+  else if(ratio > 1){score += 8;addFactor(factors,'日剂量超过参考上限')}
+  else if(ratio > .85){score += 3;addFactor(factors,'日剂量接近参考上限')}
+
+  if(days > 30){score += 14;addFactor(factors,'连续使用超过 30 天')}
+  else if(days > 14){score += 8;addFactor(factors,'连续使用超过 14 天')}
+  else if(days > 7){score += 3;addFactor(factors,'已连续使用一周以上')}
+
+  if(herb.processing && !processed){
+    score += 18;
+    addFactor(factors,'该药材对炮制或煎煮要求较高，当前处理方式不确定');
+    advice.push('确认药材是否使用规范炮制品，并按医嘱先煎、久煎或采用其他指定处理方法。');
+  }
+
+  person.forEach(function(item){
+    score += item.weight;
+    addFactor(factors,'存在个体风险：' + item.label);
+    if(item.id === 'pregnancy' && herb.pregnancy === '禁用'){score += 10;addFactor(factors,'该药材在孕期通常禁用')}
+    if(item.id === 'liver' && herb.tags.join(' ').indexOf('肝毒性')>=0){score += 4;addFactor(factors,'该药材具有肝毒性相关风险')}
+    if(item.id === 'kidney' && herb.tags.join(' ').indexOf('肾毒性')>=0){score += 4;addFactor(factors,'该药材具有肾毒性相关风险')}
+  });
+
+  meds.forEach(function(item){
+    let weight = item.weight;
+    const tags = herb.tags.join(' ');
+    if(item.id === 'anticoag' && tags.indexOf('出血')<0) weight = Math.max(3,weight-4);
+    if(item.id === 'digoxin' && tags.indexOf('心血管')<0) weight = Math.max(3,weight-4);
+    if(item.id === 'sedative' && tags.indexOf('神经')<0) weight = Math.max(3,weight-4);
+    score += weight;
+    addFactor(factors,'合并用药：' + item.label);
+  });
+
+  symptoms.forEach(function(item){
+    score += item.weight;
+    addFactor(factors,'出现警示症状：' + item.label);
+  });
+
+  score = Math.round(clamp(score,3,100));
+  const level = levelFor(score);
+
+  if(ratio > 1) advice.push('不要自行增加剂量；核对处方中的每日用量与炮制规格。');
+  if(days > 14) advice.push('避免长期连续服用，按需要安排复诊或用药评估。');
+  if(symptoms.length){advice.push('出现警示症状时先停用可疑药材，并携带药盒、处方或剩余药材就医。');}
+  if(person.some(function(p){return ['pregnancy','liver','kidney','child'].indexOf(p.id)>=0})) advice.push('特殊人群用药前应由医生或药师评估，不建议仅凭网络信息自行服用。');
+  if(meds.length) advice.push('将正在使用的处方药、保健品和中药一并告知医生或药师，排查相互作用。');
+  advice.push(herb.advice);
+  if(level.key === 'low') advice.push('继续遵守推荐剂量和疗程，观察是否出现新的不适。');
+  if(level.key === 'mid') advice.push('暂不要加量或延长疗程；症状持续或加重时咨询专业人士。');
+  if(level.key === 'high' || level.key === 'critical') advice.push('建议暂停自行使用，尽快咨询医生或药师；严重症状直接急诊。');
+
+  const details = {
+    id:uid(),createdAt:new Date().toISOString(),herb:herb.name,dose:dose,days:days,form:form,processed:processed,
+    person:person.map(function(x){return x.label}),meds:meds.map(function(x){return x.label}),symptoms:symptoms.map(function(x){return x.label}),
+    score:score,level:level.key,levelLabel:level.label,factors:factors.slice(0,9),advice:Array.from(new Set(advice)).slice(0,8),herbRisk:herb.risk
+  };
+  return details;
+}
+
+function renderResult(result){
+  const level = levelFor(result.score);
+  const gauge = $('gauge');
+  gauge.style.setProperty('--score',result.score);
+  gauge.style.setProperty('--tone',level.tone);
+  $('scoreText').textContent = result.score;
+  const pill = $('levelPill');
+  pill.className = 'level-pill ' + level.pill;
+  pill.textContent = level.label;
+  $('resultTitle').textContent = level.title;
+  $('resultDesc').textContent = level.desc;
+  $('resultMeta').textContent = result.herb + ' · ' + result.dose + ' g/日 · 连续 ' + result.days + ' 天 · ' + result.form;
+  $('resultDate').textContent = shortDate(result.createdAt);
+  $('factorList').innerHTML = result.factors.map(function(text){return '<li class="factor-item">'+escapeHtml(text)+'</li>'}).join('');
+  $('adviceList').innerHTML = result.advice.map(function(text){return '<li class="advice-item">'+escapeHtml(text)+'</li>'}).join('');
+  $('herbNote').innerHTML = '<strong>药材提示：</strong>' + escapeHtml(result.herbRisk);
+  const emergency = $('emergencyBox');
+  if(result.symptoms.length){
+    emergency.textContent = '检测到警示症状。请立即停用可疑药材；若出现呼吸困难、意识异常、胸痛、晕厥、尿量明显减少或严重黄疸，请立即就医或拨打 120。';
+    emergency.classList.add('show');
+  }else{emergency.classList.remove('show')}
+  const card = $('resultCard');
+  card.classList.add('show');
+  window.currentResult = result;
+  requestAnimationFrame(function(){card.scrollIntoView({behavior:'smooth',block:'start'})});
+}
+
+function runAssessment(){
+  const result = calculate();
+  if(!result) return;
+  saveRecord(result);
+  renderResult(result);
+  renderRecords();
+  toast('筛查完成，已保存到本地记录');
+}
+
+function readRecords(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')}catch(e){return []}
+}
+function writeRecords(records){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(records))}catch(e){}
+}
+function saveRecord(result){
+  const records = readRecords();
+  records.unshift(result);
+  writeRecords(records.slice(0,60));
+}
+
+function renderRecords(){
+  const records = readRecords();
+  const high = records.filter(function(r){return r.score>=50}).length;
+  $('statTotal').textContent = records.length;
+  $('statHigh').textContent = high;
+  $('statLast').textContent = records.length ? shortDate(records[0].createdAt) : '--';
+  const list = $('recordList');
+  if(!records.length){
+    list.innerHTML = '<div class="empty"><div class="empty-icon">◎</div><div>还没有筛查记录</div><div class="small" style="margin-top:6px">完成第一次评估后会自动保存在这里</div></div>';
+    $('recordActions').style.display = 'none';
+    return;
+  }
+  $('recordActions').style.display = 'flex';
+  list.innerHTML = records.map(function(r){
+    const level = levelFor(r.score);
+    return '<div class="card record-card" data-record-id="'+escapeHtml(r.id)+'" style="cursor:pointer">'+
+      '<div class="record-score" style="background:'+level.tone+'18;color:'+level.tone+'">'+r.score+'</div>'+
+      '<div class="record-main"><h3>'+escapeHtml(r.herb)+' · '+escapeHtml(level.label)+'</h3><p>'+formatDate(r.createdAt)+' · '+r.dose+' g/日 · '+r.days+' 天</p></div>'+
+      '<div class="record-arrow">›</div></div>';
+  }).join('');
+}
+
+function openRecord(id){
+  const record = readRecords().find(function(r){return r.id===id});
+  if(record) openReport(record);
+}
+
+function openReport(record){
+  const level = levelFor(record.score);
+  const person = record.person.length ? record.person.join('、') : '未填写';
+  const meds = record.meds.length ? record.meds.join('、') : '未填写';
+  const symptoms = record.symptoms.length ? record.symptoms.join('、') : '无';
+  $('reportSheet').innerHTML = '<div class="report-brand"><b>药安智鉴 · 中药毒性风险筛查报告</b><span>规则辅助筛查<br>'+formatDate(record.createdAt)+'</span></div>'+
+    '<div class="report-grid"><div><label>药材</label><strong>'+escapeHtml(record.herb)+'</strong></div><div><label>风险指数</label><strong style="color:'+level.tone+'">'+record.score+' / 100 · '+escapeHtml(level.label)+'</strong></div>'+
+    '<div><label>每日用量</label><strong>'+record.dose+' g</strong></div><div><label>连续天数</label><strong>'+record.days+' 天</strong></div>'+
+    '<div><label>使用形式</label><strong>'+escapeHtml(record.form)+'</strong></div><div><label>规范炮制</label><strong>'+(record.processed?'是':'否/不确定')+'</strong></div>'+
+    '<div><label>个体风险</label><strong>'+escapeHtml(person)+'</strong></div><div><label>合并用药</label><strong>'+escapeHtml(meds)+'</strong></div>'+
+    '<div style="grid-column:1/-1"><label>警示症状</label><strong>'+escapeHtml(symptoms)+'</strong></div></div>'+
+    '<div class="report-section"><h3>关键风险因素</h3><ul>'+record.factors.map(function(x){return '<li>'+escapeHtml(x)+'</li>'}).join('')+'</ul></div>'+
+    '<div class="report-section"><h3>建议行动</h3><ul>'+record.advice.map(function(x){return '<li>'+escapeHtml(x)+'</li>'}).join('')+'</ul></div>'+
+    '<div class="report-section"><h3>药材安全提示</h3><p>'+escapeHtml(record.herbRisk)+'</p></div>'+
+    '<div class="report-section"><p><strong>免责声明：</strong>本报告由规则模型根据填写信息生成，仅用于中药安全风险教育和辅助筛查，不能替代医生、药师或医疗机构的诊断与治疗。</p></div>';
+  $('reportModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  window.reportRecord = record;
+}
+function closeReport(){
+  $('reportModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function summaryText(record){
+  const lines = [
+    '【药安智鉴 · 中药毒性风险筛查】',
+    '药材：' + record.herb,
+    '用量：' + record.dose + ' g/日，连续 ' + record.days + ' 天，' + record.form,
+    '风险指数：' + record.score + '/100（' + record.levelLabel + '）',
+    '关键因素：' + record.factors.slice(0,4).join('；'),
+    '建议：' + record.advice.slice(0,3).join('；'),
+    '提示：本结果仅用于辅助筛查，不能替代医生或药师诊疗。'
+  ];
+  return lines.join('\n');
+}
+async function copyText(text){
+  try{
+    if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(text);return true}
+    const area = document.createElement('textarea');
+    area.value = text;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.focus();area.select();
+    const ok = document.execCommand('copy');document.body.removeChild(area);return ok;
+  }catch(e){return false}
+}
+async function shareResult(record){
+  const text = summaryText(record);
+  if(navigator.share){
+    try{await navigator.share({title:'药安智鉴风险筛查',text:text});return}catch(e){if(e.name==='AbortError')return}
+  }
+  const ok = await copyText(text);
+  toast(ok ? '已复制摘要，可粘贴分享' : '当前浏览器不支持自动分享');
+}
+
+function renderLibrary(){
+  const query = $('librarySearch').value.trim().toLowerCase();
+  const active = document.querySelector('.filter-chip.active');
+  const filter = active ? active.dataset.filter : '全部';
+  const list = HERBS.filter(function(h){
+    const text = (h.name+' '+h.aliases+' '+h.tags.join(' ')+' '+h.risk).toLowerCase();
+    const matchQuery = !query || text.indexOf(query)>=0;
+    let matchFilter = true;
+    if(filter==='高警戒') matchFilter = h.grade>=4;
+    else if(filter!=='全部') matchFilter = h.tags.join(' ').indexOf(filter)>=0;
+    return matchQuery && matchFilter;
+  });
+  if(!list.length){
+    $('libraryList').innerHTML = '<div class="card empty"><div class="empty-icon">⌕</div><div>没有找到匹配药材</div><div class="small" style="margin-top:6px">试试更短的关键词或切换筛选</div></div>';
+    return;
+  }
+  $('libraryList').innerHTML = list.map(function(h){
+    return '<details class="card herb-card"><summary><div class="herb-summary"><div><h3 class="herb-name">'+escapeHtml(h.name)+'</h3><p class="herb-aliases">'+escapeHtml(h.aliases)+'</p><div class="tag-row">'+h.tags.map(function(t){return '<span class="tag">'+escapeHtml(t)+'</span>'}).join('')+'</div></div><span class="grade grade-'+h.grade+'">警戒 '+h.grade+'/5</span></div></summary>'+
+      '<div class="herb-detail"><p><strong>风险特点：</strong>'+escapeHtml(h.risk)+'</p><p><strong>参考日剂量上限：</strong>'+h.max+' g（仅作筛查参考，具体遵医嘱）</p><p><strong>特殊人群：</strong>'+escapeHtml(h.pregnancy)+'</p><p><strong>使用建议：</strong>'+escapeHtml(h.advice)+'</p></div></details>';
+  }).join('');
+}
+
+function buildLibraryFilters(){
+  $('libraryFilters').innerHTML = FILTERS.map(function(f){
+    return '<button type="button" class="filter-chip'+(f==='全部'?' active':'')+'" data-filter="'+escapeHtml(f)+'">'+escapeHtml(f)+'</button>';
+  }).join('');
+}
+
+function fillExample(){
+  $('herbSelect').value = '何首乌';
+  $('doseInput').value = 20;
+  $('daysInput').value = 21;
+  $('formSelect').value = '汤剂';
+  document.querySelector('input[name="processed"][value="yes"]').checked = true;
+  document.querySelectorAll('#personFactors input').forEach(function(el){el.checked = el.value==='liver'});
+  document.querySelectorAll('#medFactors input').forEach(function(el){el.checked = false});
+  document.querySelectorAll('#symptomFactors input').forEach(function(el){el.checked = false});
+  updateHerbHint();
+  document.querySelectorAll('.chip-button').forEach(function(el){el.classList.toggle('active',el.dataset.herb==='何首乌')});
+  toast('已填入何首乌示例');
+}
+
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(function(page){page.classList.toggle('active',page.id==='page-'+name)});
+  document.querySelectorAll('.nav button').forEach(function(btn){btn.classList.toggle('active',btn.dataset.page===name)});
+  if(name==='library') renderLibrary();
+  if(name==='records') renderRecords();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+let toastTimer = null;
+function toast(message){
+  const el = $('toast');el.textContent = message;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer = setTimeout(function(){el.classList.remove('show')},2200);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  const installHint=$('installHint');
+  const standalone=window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  if(standalone || localStorage.getItem('yaoan_install_hint_hidden')==='1'){installHint.classList.add('hide')}
+  $('hideInstallHint').addEventListener('click',function(){installHint.classList.add('hide');try{localStorage.setItem('yaoan_install_hint_hidden','1')}catch(e){}});
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){});}
+  buildSelect();
+  buildChoices();
+  buildLibraryFilters();
+  renderLibrary();
+  renderRecords();
+
+  $('assessButton').addEventListener('click',runAssessment);
+  $('exampleButton').addEventListener('click',fillExample);
+  $('shareButton').addEventListener('click',function(){if(window.currentResult)shareResult(window.currentResult)});
+  $('reportButton').addEventListener('click',function(){if(window.currentResult)openReport(window.currentResult)});
+  $('closeModalButton').addEventListener('click',closeReport);
+  $('reportModal').addEventListener('click',function(e){if(e.target===$('reportModal'))closeReport()});
+  $('copyReportButton').addEventListener('click',async function(){const ok=await copyText(summaryText(window.reportRecord));toast(ok?'报告摘要已复制':'复制失败，请手动选择文本')});
+  $('printReportButton').addEventListener('click',function(){window.print()});
+  $('librarySearch').addEventListener('input',renderLibrary);
+  $('libraryFilters').addEventListener('click',function(e){const btn=e.target.closest('.filter-chip');if(!btn)return;document.querySelectorAll('.filter-chip').forEach(function(x){x.classList.toggle('active',x===btn)});renderLibrary()});
+  $('recordList').addEventListener('click',function(e){const card=e.target.closest('[data-record-id]');if(card)openRecord(card.dataset.recordId)});
+  $('clearRecordsButton').addEventListener('click',function(){if(confirm('确定清空全部本地筛查记录吗？此操作不可恢复。')){localStorage.removeItem(STORAGE_KEY);renderRecords();toast('记录已清空')}});
+  document.querySelectorAll('.nav button').forEach(function(btn){btn.addEventListener('click',function(){switchPage(btn.dataset.page)})});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('reportModal').classList.contains('show'))closeReport()});
+  $('doseInput').addEventListener('input',function(){$('doseError').classList.remove('show')});
+  $('daysInput').addEventListener('input',function(){$('daysError').classList.remove('show')});
+  $('herbSelect').addEventListener('change',function(){$('herbError').classList.remove('show')});
+});
+})();
+</script>
+</body>
+</html>

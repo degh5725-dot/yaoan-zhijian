@@ -1,0 +1,26 @@
+{
+  "name": "药安智鉴 · 中药毒性风险筛查",
+  "short_name": "药安智鉴",
+  "description": "面向手机使用的中药毒性风险智能评估助手",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f0e7",
+  "theme_color": "#153f35",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
